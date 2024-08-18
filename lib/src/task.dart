@@ -88,6 +88,7 @@ abstract class TorrentTask with EventsEmittable<TaskEvent> {
 
   /// Start to download
   Future<Map> start();
+  
 
   // Start streaming videos
   Future<void> startStreaming();
@@ -102,12 +103,15 @@ abstract class TorrentTask with EventsEmittable<TaskEvent> {
   abstract TaskState state;
   Iterable<Peer>? get activePeers;
   PieceManager? get pieceManager;
+  
 
   /// Pause task
   void pause();
 
   /// Resume task
   void resume();
+
+  void processPieceRejected(int index);
 
   void requestPeersFromDHT();
 
@@ -149,10 +153,13 @@ class _TorrentTask
 
   @override
   PieceManager? get pieceManager => _pieceManager;
-
+   
   DownloadFileManager? _fileManager;
 
   PeersManager? _peersManager;
+
+  
+
 
   StreamingServer? _streamingServer;
 
@@ -488,6 +495,7 @@ class _TorrentTask
     return map;
   }
 
+  @override
   void processPieceRejected(int index) {
     var piece = _pieceManager?[index];
     if (piece == null) return;
